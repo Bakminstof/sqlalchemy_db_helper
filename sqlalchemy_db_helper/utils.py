@@ -2,6 +2,7 @@ __all__ = (
     "db_startup",
     "db_shutdown",
     "get_async_session",
+    "get_async_connection",
 )
 
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
