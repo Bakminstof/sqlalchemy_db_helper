@@ -25,7 +25,7 @@ class AsyncDatabase:
 
     @property
     def status(self) -> str:
-        return "Connected" if self.__connected else "Disconnected"
+        return "Connected" if self.__initialized else "Disconnected"
 
     async def init(
         self,
@@ -146,4 +146,4 @@ class AsyncDatabase:
 
         res = ", ".join([f"{k}={v}" for k, v in args.items() if v])
 
-        return f"{self.__class__.__name__}[{thread_repr}]({res if self.__connected else self.status})"
+        return f"{self.__class__.__name__}[{thread_repr}]({res if self.__initialized else self.status})"
