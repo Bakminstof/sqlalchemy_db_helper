@@ -73,8 +73,8 @@ class UUIDPKMixin:
 
 
 class ReprMixin:
-    repr_col_num = 3
-    repr_cols = tuple()
+    repr_col_num: int = 3
+    repr_cols: frozenset = frozenset()
 
     def __str__(self) -> str:
         cols = []
