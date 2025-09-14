@@ -7,7 +7,7 @@ __all__ = (
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from logging import getLogger
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncConnection
 
 from .helper import AsyncDatabase
 
@@ -22,6 +22,12 @@ async def db_startup(*args, **kwargs) -> None:
 
 async def db_shutdown() -> None:
     await db.close()
+
+
+@asynccontextmanager
+async def get_async_connection() -> AbstractAsyncContextManager[AsyncConnection]:
+    async with db.connect() as conn:  # type: AsyncConnection
+        yield conn
 
 
 @asynccontextmanager
