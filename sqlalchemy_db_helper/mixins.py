@@ -128,6 +128,8 @@ class PaginationMixin(CRUDMixin):
         page: int,
         limit: int | None = None,
         order_by: Any | None = None,
+        *,
+        params: dict | None = None,
     ) -> PaginationResultModel:
         if limit is None:
             limit = DEFAULT_LIMIT
@@ -135,7 +137,7 @@ class PaginationMixin(CRUDMixin):
         if order_by is None:
             order_by = DEFAULT_ORDERING
 
-        rows_count = await self.count(stmt)
+        rows_count = await self.count(stmt, params)
 
         result = {}
         offset = (page - 1) * limit
