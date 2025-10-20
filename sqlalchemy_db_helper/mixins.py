@@ -154,10 +154,24 @@ class PaginationMixin(CRUDMixin):
         limit: int,
         offset: int,
         order_by: Any,
+        *,
+        params: dict | None = None,
     ) -> ScalarResult:
-        result = await self.async_session.scalars(
-            stmt.limit(limit).offset(offset).order_by(order_by)
-        )
+        if hasattr(stmt, "limit"):
+            result = await self.async_session.scalars(
+                stmt.limit(limit).offset(offset).order_by(order_by)
+            )
+        else:
+            sql_text = stmt.text if hasattr(stmt, "text") else stmt
+            order_sql = f" ORDER BY {order_by}" if order_by else ""
+            paginated_sql = f"SELECT * FROM ({sql_text}) AS sub{order_sql} LIMIT :limit OFFSET :offset"
+            final_stmt = text(paginated_sql).bindparams(
+                **params,
+                limit=limit,
+                offset=offset,
+            )
+            result = await self.async_session.scalars(final_stmt)
+
         await self.async_session.commit()
         return result
 
