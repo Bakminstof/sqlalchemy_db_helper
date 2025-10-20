@@ -8,7 +8,7 @@ __all__ = (
 from typing import Any, AsyncGenerator, Sequence, TypeVar
 from uuid import UUID, uuid4
 
-from sqlalchemy import UUID as SA_UUID
+from sqlalchemy import UUID as SA_UUID, text
 from sqlalchemy import ScalarResult, Select
 from sqlalchemy import delete as sa_delete
 from sqlalchemy import func
@@ -38,9 +38,17 @@ class CRUDMixin:
     def __repr__(self) -> str:
         return f"'{self.__str__()}'"
 
-    async def count(self, stmt: Select) -> int:
-        count_stmt = sa_select(func.count()).select_from(stmt.subquery())
-        result = await self.async_session.scalar(count_stmt)
+    async def count(self, stmt: Select, params: dict | None = None) -> int:
+        if hasattr(stmt, "subquery"):
+            count_stmt = sa_select(func.count()).select_from(stmt.subquery())
+            result = await self.async_session.scalar(count_stmt)
+        else:
+            params = params or {}
+            count_sql = f"SELECT COUNT(*) FROM ({stmt.text if hasattr(stmt, 'text') else stmt}) AS sub"
+            result = await self.async_session.scalar(
+                text(count_sql).bindparams(**params)
+            )
+
         await self.async_session.commit()
         return result
 
