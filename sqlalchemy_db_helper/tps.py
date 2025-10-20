@@ -1,5 +1,7 @@
 __all__ = (
     "str_100",
+    "str_500",
+    "str_1000",
     "timestamp",
     "obj_path",
     "list_str",
@@ -24,6 +26,8 @@ class PathType(TypeDecorator):
 
 
 str_100 = Annotated[str, 100]
+str_500 = Annotated[str, 500]
+str_1000 = Annotated[str, 1000]
 
 timestamp = Annotated[datetime, mapped_column(TIMESTAMP)]
 
